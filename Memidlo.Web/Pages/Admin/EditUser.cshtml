@@ -1,0 +1,63 @@
+﻿@page "{id:Guid}"
+@model Memidlo.Web.Pages.Admin.EditUserModel
+@{
+    ViewData["Title"] = "Edycja Użytkowników";
+}
+
+<div class="container mt-5 mx-auto">
+    <div class="row justify-content-center">
+        <partial name="_Notification"></partial>
+        <div class="col-12 col-lg-6 bg-light p-3">
+            <h3 class="mb-3">Edycja użytkownika</h3>
+            <form method="post" asp-page-handler="update">
+                <div class="mb-3">
+                    <div class="mb-3">
+                        <label class="form-label text-black light">Id Użytkownika</label>
+                        <input type="text" class="form-control" asp-for="UserVM.Id" required readonly />
+                    </div>
+                    <label class="form-label text-black light">Nazwa Użytkownika</label>
+                    <input type="text" class="form-control" asp-for="UserVM.UserName" required />
+                    <span class="text-danger" asp-validation-for="UserVM.UserName"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-black light">Email</label>
+                    <input type="email" class="form-control" asp-for="UserVM.Email" required />
+                    <span class="text-danger" asp-validation-for="UserVM.Email"></span>
+                </div>
+                <div class="container mb-3">
+                    <input class="form-check-input" type="checkbox" id="passwordReset">
+                    <label class="form-check-label text-dark mx-2" for="passwordReset">
+                        Zresetować haslo?
+                    </label>
+                    <input type="hidden" id="passwordField" asp-for="UserVM.Password" />
+                    <label class="form-check-label text-dark mx-2" style="display:none" for="passwordField" id="labelForPasswordField">
+                        Wprowadź nowe haslo
+                    </label>
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-danger" type="submit">Zapisz zmiany</button>
+                    <a class="btn btn-dark float-end" href="/Admin/Users">Zamknij</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        const passwordResetElement = document.getElementById('passwordReset');
+        const passwordFieldElement = document.getElementById('passwordField');
+        const label = document.getElementById('labelForPasswordField');
+
+        passwordResetElement.addEventListener('change', function () {
+            if (passwordResetElement.checked == true) {
+                passwordFieldElement.type = "password";
+                label.style = "display";
+            } else {
+                passwordFieldElement.type = "hidden";
+                label.style = "display: none";
+            }
+        });
+
+    </script>
+}

@@ -1,0 +1,75 @@
+﻿@page
+@model Memidlo.Web.Pages.Mems.AddMemModel
+@{
+    ViewData["Title"] = "DODAJ MEM";
+}
+
+<div class="bg-light my-4">
+    <div class="container p-5">
+        <h5 class="text-center mt-6">STWÓRZ SWÓJ MEM</h5>
+        <form method="post">
+            <div class="mb-3">
+                <label for="pageTitle" class="form-label">Nazwa strony</label>
+                <input type="text" class="form-control" id="pageTitle" asp-for="MemVM.PageTitle" required>
+                <span class="text-danger" asp-validation-for="MemVM.PageTitle"></span>
+            </div>
+            <div class="mb-3">
+                <label for="heading" class="form-label">Tytul/Haslo memu</label>
+                <input type="text" class="form-control" id="heading" asp-for="MemVM.Heading">
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">Treść</label>
+                <input type="text" class="form-control" id="content" asp-for="MemVM.Content">
+            </div>
+            <div class="mb-3">
+                <label for="featuredImageUpload" class="form-label">Dodaj obraz</label>
+                <input type="file" id="featuredImageUpload" asp-for="FeaturedImage">
+                <img src="" id="featuredImageDisplay" style="display:none; width:300px" />
+            </div>
+            <div class="mb-3">
+                <label for="featuredImageUrl" class="form-label">Link do obrazu</label>
+                <input type="text" class="form-control" id="featuredImageUrl" asp-for="MemVM.FeaturedImageUrl" required>
+                <span class="text-danger" asp-validation-for="MemVM.FeaturedImageUrl"></span>
+            </div>
+            <div class="mb-3">
+                <label for="tags" class="form-label">#Tagi</label>
+                <input type="text" class="form-control" id="tags" asp-for="Tags" required />
+                <span class="text-danger" asp-validation-for="Tags"></span>
+            </div>
+            <div class="mb-3">
+               <button class="btn btn-secondary mt-3" type="submit">Wyślij mem do poczekalni</button>
+            </div>
+        </form>
+       
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        const featuredImageUploadElement = document.getElementById('featuredImageUpload');
+        const featuredImageUrl = document.getElementById('featuredImageUrl');
+        const featuredImageDisplay = document.getElementById('featuredImageDisplay');
+
+        async function uploadFeaturedImage(e) {
+            console.log(e.target.files[0]);
+            let data = new FormData();
+            data.append('file', e.target.files[0])
+
+            await fetch('/api/images', {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*',
+                },
+                body: data
+            }).then(response => response.json())
+                .then(result => {
+                    featuredImageUrl.value = result.link;
+                    featuredImageDisplay.style.display = 'block';
+                    featuredImageDisplay.src = result.link;
+                });
+        }
+
+        featuredImageUploadElement.addEventListener('change', uploadFeaturedImage)
+    </script>
+}

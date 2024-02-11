@@ -1,0 +1,98 @@
+﻿@page
+@model IndexModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+@{
+    ViewData["Title"] = "Home page";
+}
+<div class="container">
+    <div class="row justify-content-center p-3 m-3">
+        <partial name="_Notification" />
+        <div class="col-8">
+            @if (Model.Mems != null && Model.Mems.Any())
+            {
+                foreach (var mem in Model.Mems)
+                {
+                    <form method="post" asp-page-handler="Delete" id="deleteForm">
+                        <div class="bg-black px-5 pt-3 pb-5 mb-5">
+                            <a href="/mems/@mem.Id" class="text-decoration-none">
+                                <h1 class="text-light mb-3 text-center">
+                                    @mem.Heading
+                                </h1>
+                                <center><img src="@mem.FeaturedImageUrl" alt="@mem.Heading" class="img-fluid d-block mb-3" /></center>
+                                <p class="text-light fs-4 mb-3 text-center">@mem.Content</p>
+                                <p class="text-secondary float-end">Autor: @mem.Author</p>
+                            </a>
+                            <br />
+                            <div class="text-light">
+                                <p></p>
+                            </div>
+                            @if (mem.Tags != null)
+                            {
+                                foreach (var tag in mem.Tags)
+                                {
+                                    <a class="text-decoration-none" href="/tags/@tag.Name">
+                                        <span class="badge bg-light text-dark">@tag.Name</span>
+                                    </a>
+                                }
+                            }
+                            <div class="my-3 text-light">
+                          
+                                <span id="totalLikes"> Lajków: @mem.Likes.Count()</span>
+
+                            </div>
+
+                            @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                            {
+                                <div class="mt-3 mb-2">
+                                    <button type="submit" class="btn btn-danger float-end" data-id=@mem.Id>Usuń mem</button>
+                                </div>
+                            }
+                            <input type="hidden" asp-for="SelectedMemId" id="selectedMemId" />
+                        </div>
+                    </form>
+                }
+            }
+            <div>
+                @if (Model.PaginatedPage.Count > 10)
+                {
+                    <ul class="pagination justify-content-center">
+                        @if (Model.PaginatedPage.ShowPrevious)
+                        {
+                            <li class="page-item">
+                                <a asp-route-currentpage="@(Model.PaginatedPage.CurrentPage -1)" class="btn btn-light me-5">&lt; Previous</a>
+                            </li>
+                        }
+                        @if (Model.PaginatedPage.ShowNext)
+                        {
+                            <li class="page-item">
+                                <a asp-route-currentpage="@(Model.PaginatedPage.CurrentPage + 1)" class="btn btn-light">Next &gt;</a>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts{
+    <script>
+        const button = document.querySelectorAll('.btn-danger');
+        const selectedMemIdElement = document.getElementById('selectedMemId');
+        const deleteFormElement = document.getElementById('deleteForm');
+      
+
+        button.forEach((element) =>
+            element.addEventListener('click', function confirmDecision() {
+
+                if (confirm('Czy na pewno chcesz usunąć mem?') == true) {
+                    const memId = element.dataset.id;
+                    selectedMemIdElement.value = memId;
+                    moveMemToMainFormElement.submit();
+                }
+            }));
+
+
+    </script>
+}

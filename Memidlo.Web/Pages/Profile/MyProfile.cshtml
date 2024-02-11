@@ -1,0 +1,78 @@
+﻿@page "{id}"
+@model Memidlo.Web.Pages.Profile.MyProfileModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+@{
+    string title;
+    if (signInManager.IsSignedIn(User))
+    {
+        title = User?.Identity?.Name;
+    }
+    else
+    {
+        title = "Mój profil";
+    }
+
+    ViewData["Title"] = title;
+}
+
+<div class="container">
+    <partial name="_Notification"></partial>
+    <form method="post" id="editMyProfileForm">
+        <div class="text-light fs-5 m-5">
+            <div class="mb-3">
+                <input type="hidden" asp-for="UserVM.Id" id="thisUserId"/>
+                <lable class="form-label" for="userName">Nazwa użytkownika</lable>
+                <input type="text" class="form-control mb-2" asp-for="UserVM.UserName" id="userName" required />
+                <br />
+            </div>
+            <div class="mb-3">
+                <lable class="form-label" for="email">Email</lable>
+                <input type="text" class="form-control mb-2" asp-for="UserVM.Email" id="email" required />
+                <br />
+            </div>
+            <div class="mb-3">
+                <lable class="form-label" for="password">Haslo</lable>
+                <input type="password" class="mb-2" asp-for="UserVM.Password" id="password" required />
+                <button class="btn btn-light float-end" id="button">Zapisz zmiany</button>
+                <br />
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="container">
+    <div class="m-5 p-3 bg-light">
+        <h5 class="text-decoration-underline mb-3">Moje Memy</h5>
+
+
+        @foreach (var mem in Model.Mems)
+        {
+            <div class="mb-3">
+                <a class="text-decoration-none" href="/Profile/EditMyMem/@mem.Id">
+                    @if (mem.FeaturedImageUrl != null)
+                    {
+                        <img class="mx-3" src="@mem.FeaturedImageUrl" id="featuredImageDisplay" style="width:100px;" />
+                    }
+                    else
+                    {
+                        <img class="mx-3" id="featuredImageDisplay" style="display:none; width:100px;" />
+                    }
+                    @if (mem.Heading != null)
+                    {
+                        <span class="ms-3" id="heading">@mem.Heading</span>
+                    }
+                    else
+                    {
+                        <span class="fst-italic ms-3" id="heading">-- Nie podano tytulu --</span>
+                    }
+                </a>
+            </div>
+        }
+
+    </div>
+</div>
+
+
+

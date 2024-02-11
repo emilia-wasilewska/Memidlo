@@ -1,0 +1,120 @@
+﻿@page
+@model Memidlo.Web.Pages.WaitingRoomModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+
+@{
+    ViewData["Title"] = "POCZEKALNIA";
+}
+
+<div class="container">
+    <partial name="_Notification" />
+    <form method="post" id="moveMemToMainForm">
+        <div class="row justify-content-center p-3 m-3">
+            <div class="col-8" id="mem">
+                @if (Model.Mems != null && Model.Mems.Any())
+                {
+                    foreach (var mem in Model.Mems)
+                    {
+                        <div class="bg-black px-5 pt-3 pb-3 mb-5">
+                            <a href="/mems/@mem.Id" class="text-decoration-none ">
+                                <h1 class="text-light mb-3 text-center">
+                                    @mem.Heading
+                                </h1>
+                                <center><img src="@mem.FeaturedImageUrl" alt="@mem.Heading" class="img-fluid d-block mb-3" /></center>
+                                <p class="text-light fs-4 mb-3 text-center">@mem.Content</p>
+                                <p class="text-secondary float-end mb-3">Autor: @mem.Author</p>
+                                <br />
+                            </a>
+                            @if (mem.Tags != null)
+                            {
+                                foreach (var tag in mem.Tags)
+                                {
+                                    <a class="text-decoration-none" href="/tags/@tag.Name">
+                                        <span class="badge bg-light text-dark mb-3">@tag.Name</span>
+                                    </a>
+                                }
+                            }
+                            <br />
+                            @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                            {
+                                <div class="pb-3 mb-3">
+                                    <input class="form-check-input" type="checkbox" id="mainCheck" data-id=@mem.Id>
+                                    <label class="form-check-label text-light" for="mainCheck">
+                                        Przenieś na Glówną
+                                    </label>
+                                    <!-- Modal trigger -->
+                                    <button type="submit" class="btn btn-danger float-end" data-bs-toggle="modal" data-bs-target="#deleteMemModal" asp-route-id="@mem.Id" asp-page-handler="Delete">Usuń mem</button>
+                                </div>
+
+                            }
+                        </div>
+                    }
+                }
+                <input type="hidden" asp-for="SelectedMemId" id="selectedMemId" />
+            </div>
+        </div>
+    </form>
+    <!-- Modal -->
+    <div class="modal fade" id="deleteMemModal" tabindex="-1" role="dialog" aria-labelledby="deleteMemModal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Czy na pewno chcesz usunąć mem?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        @if (Model.PaginatedPage.Count > 10)
+        {
+            <ul class="pagination justify-content-center">
+                @if (Model.PaginatedPage.ShowPrevious)
+                {
+                    <li class="page-item">
+                        <a asp-route-currentpage="@(Model.PaginatedPage.CurrentPage -1)" class="btn btn-light me-5"> &lt;  Previous</a>
+                    </li>
+                }
+                @if (Model.PaginatedPage.ShowNext)
+                {
+                    <li class="page-item">
+                        <a asp-route-currentpage="@(Model.PaginatedPage.CurrentPage + 1)" class="btn btn-light">Next &gt;</a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        const check = document.querySelectorAll('.form-check-input');
+        const selectedMemIdElement = document.getElementById('selectedMemId');
+        const moveMemToMainFormElement = document.getElementById('moveMemToMainForm');
+
+        for (let i = 0; i < check.length; i++) {
+            check[i].addEventListener('change', function confirmDecision() {
+
+                if (confirm('Czy naprawdę chcesz przenieść mem do Glównej?') == true) {
+                    check[i].checked = true;
+                    const memId = check[i].dataset.id;
+                    selectedMemIdElement.value = memId;
+                    moveMemToMainFormElement.submit();
+                } else {
+                    check[i].checked = false;
+                }
+            });
+        }
+
+
+
+    </script>
+}
+

@@ -1,0 +1,30 @@
+﻿@page
+@model Memidlo.Web.Pages.Mems.RandomMemModel
+@{
+    ViewData["Title"] = "Wylosowano" + Model.Mem?.PageTitle;
+}
+
+<div class="container">
+    <div class="row justify-content-center p-3 m-3">
+        <div class="col-8">
+            <div class="bg-black px-5 pt-3 pb-3 mb-5">
+                <h1 class="text-light mb-3 text-center">
+                    @Model.Mem?.Heading
+                </h1>
+                <center><img src="@Model.Mem?.FeaturedImageUrl" alt="@Model.Mem?.Heading" class="img-fluid d-block mb-3" /></center>
+                <p class="text-light fs-4 mb-3 text-center">@Model.Mem?.Content</p>
+                <p class="text-secondary">Autor: @Model.Mem?.Author</p>
+                @if (Model.Mem?.Tags != null)
+                {
+                    foreach (var tag in Model.Mem?.Tags)
+                    {
+                        <a class="text-decoration-none" href="/tags/@tag.Name">
+                            <span class="badge bg-light text-dark">@tag.Name</span>
+                        </a>
+                    }
+                }
+                
+            </div>
+        </div>
+    </div>
+</div>

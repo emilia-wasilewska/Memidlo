@@ -1,0 +1,136 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Memidło</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/mystyles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Memidlo.Web.styles.css" asp-append-version="true" />
+    <link href="Content/bootstrap-theme.css" rel="stylesheet" />
+    <link href="Content/bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+<body class="bg-dark">
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow">
+            <div class="container">
+                <a class="navbar-brand fs-1 fst-italic text-light" asp-area="" asp-page="/Index">MEMIDŁO</a>
+                @if (signInManager.IsSignedIn(User))
+                {
+
+                    <a class="nav-link text-light fs-5 btn btn-outline-light bg-dark" asp-area="" asp-page="/Mems/AddMem">DODAJ MEM</a>
+
+                }
+
+                <ul class="navbar-nav flex-grow-1 justify-content-end">
+                    <li class="nav-item">
+                        <a class="nav-link text-light fs-5 mx-2 " asp-area="" asp-page="/Index">GŁÓWNA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light fs-5 mx-2" asp-area="" asp-page="/WaitingRoom">POCZEKALNIA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light fs-5 mx-2" asp-area="" asp-page="/Mems/RandomMem">LOSUJ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-light fs-5 mx-2" asp-area="" asp-page="/TopTen">TOP 10</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light fs-5 ms-2 me-3" data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdownLogin"><i class="bi bi-search"></i></a>
+
+                        <ul class="dropdown-menu bg-dark border-white">
+                            <li>
+                                <input class=" mb-2 mx-2" id="searchTag" />
+                                <button class="btn btn-outline-light mx-2 float-end" type="submit" id="buttonSearch">Szukaj</button>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-light fs-5 mx-2" data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdownLogin">
+                            @if (signInManager.IsSignedIn(User))
+                            {
+                                @User?.Identity?.Name
+                            }
+                            else
+                            {
+                                <i class="bi bi-person-fill"></i>
+                            }
+                        </a>
+                        <ul class="dropdown-menu bg-dark border-white" aria-labelledby="navbarDropdownLogin">
+                            <li>
+                                <a class="dropdown-item text-light" href="/Profile/Login">Logowanie</a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-light" href="/Profile/Register">Rejestracja</a>
+                            </li>
+                            @if (signInManager.IsSignedIn(User))
+                            {
+                                <li>
+                                    <a class="dropdown-item text-light" href="/Profile/MyProfile/@userManager.GetUserId(User)">Mój profil</a>
+                                </li>
+                                @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                                {
+                                    <li>
+                                        <a class="dropdown-item text-light" href="/Admin/Users">Użytkownicy</a>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </li>
+                </ul>
+                @if (signInManager.IsSignedIn(User))
+                {
+                    <!-- Modal trigger -->
+                    <a class="nav-link btn btn-outline-light bg-dark text-light ms-3" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-power" id="iconLogout"></i></a>
+
+                }
+            </div>
+        </nav>
+    </header>
+
+    <!-- Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <p class="fs-5 text-dark">Czy na pewno chcesz się wylogować?</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary mx-2" data-bs-dismiss="modal">Nie, zostanę</button>
+                    <a href="/Profile/Logout" type="submit" class="btn btn-dark text-light">Tak, wyloguj</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2023 - Memidlo - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/mylib.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+

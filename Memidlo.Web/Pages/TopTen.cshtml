@@ -1,0 +1,38 @@
+﻿@page
+@model Memidlo.Web.Pages.TopTenModel
+@{
+    ViewData["Title"] = "Top Ten";
+}
+
+<div class="container">
+    <div class="row justify-content-center p-3 m-3">
+        <div class="col-8">
+            @if (Model.Mems != null && Model.Mems.Any())
+            {
+                foreach (var mem in Model.Mems)
+                {
+                    <div class="bg-black px-5 pt-3 pb-3 mb-5">
+                        <a href="/mems/@mem.Id" class="text-decoration-none ">
+                            <h1 class="text-light mb-3 text-center">
+                                @mem.Heading
+                            </h1>
+                            <center><img src="@mem.FeaturedImageUrl" alt="@mem.Heading" class="img-fluid d-block mb-3" /></center>
+                            <p class="text-light fs-4 mb-3 text-center">@mem.Content</p>
+                            <p class="text-secondary">Autor: @mem.Author</p>
+                        </a>
+
+                        @if (mem.Tags != null)
+                        {
+                            foreach (var tag in mem.Tags)
+                            {
+                                <a class="text-decoration-none" href="/tags/@tag.Name">
+                                    <span class="badge bg-light text-dark">@tag.Name</span>
+                                </a>
+                            }
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+header li a:hover {
+    background-color: #fff;
+    color: #000000 !important;
+    transform: scale(1.15);
+}
+
+.btn:hover {
+    background-color: #fff !important;
+    color: #000000 !important;
+    transform: scale(1.15);
+}
+
+.dropdown-item:hover {
+   transform: none;
+   font-weight: bold;
+}
+

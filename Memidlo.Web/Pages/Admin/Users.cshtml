@@ -1,0 +1,125 @@
+﻿@page
+@model Memidlo.Web.Pages.Admin.UsersModel
+@{
+    ViewData["Title"] = "Użytkownicy";
+}
+
+<div class="container">
+    <div class="my-5 border border-light" style="text-align: center">
+
+        <h4 class="text-light py-3">U Ż Y T K O W N I C Y</h4>
+
+    </div>
+</div>
+<div class="container mb-5">
+    <div class="text-dark bg-light">
+        <form method="post" asp-page-handler="delete" id="deleteUserForm">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Id użytkownika</th>
+                        <th>Nazwa użytkownika</th>
+                        <th>Email użytkownika</th>
+                        <th>Password</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.Users)
+                    {
+                        <tr>
+                            <td>
+                                <a href="/Admin/EditUser/@user.Id">@user.Id</a>
+                            </td>
+                            <td>@user.UserName</td>
+                            <td>@user.Email</td>
+                            <td>*****</td>
+                            <td>
+                                <a class="btn btn-danger user-delete-btn" data-id="@user.Id">
+                                    Usuń użytkownika
+                                </a>
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <input type="hidden" asp-for="SelectedUserId" id="selectedUserId" />
+        </form>
+
+        <!-- Modal trigger -->
+        
+            <button class="float-end btn btn-dark btn-outline-light me-5" type="button" data-bs-toggle="modal" data-bs-target="#addUserModal">Dodaj użytkownika</button>
+        
+    </div>
+</div>
+
+<form method="post">
+    <!-- Modal -->
+    <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModal" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Dane Użytkownika</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Nazwa użytkownika</label>
+                        <input type="text" class="form-control" asp-for="User.UserName" required />
+                        <span class="text-danger" asp-validation-for="User.UserName"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" asp-for="User.Email" required />
+                        <span class="text-danger" asp-validation-for="User.Email"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Haslo</label>
+                        <input type="password" class="form-control" asp-for="User.Password" required minlength="8" />
+                        <span class="text-danger" asp-validation-for="User.Password"></span>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox"
+                                   value="User" checked disabled>
+                            <label class="form-check-label" for="flexCheckDefault">
+                                Uprawnienia użytkownika
+                            </label>
+                        </div>
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" asp-for="User.IsAdmin">
+                                <label class="form-check-label" for="flexCheckChecked">
+                                    Uprawnienia admina
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+                    <button type="submit" class="btn btn-dark">Zapisz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+@section Scripts {
+    <script>
+        const userDeleteElements = document.querySelectorAll('.user-delete-btn');
+        const selectedUserIdElement = document.getElementById('selectedUserId');
+        const deleteUserFormElement = document.getElementById('deleteUserForm');
+
+        userDeleteElements.forEach((element) => {
+            element.addEventListener('click', function () {
+                if (confirm('Czy na pewno chcesz usunąć tego użytkownika?') == true) {
+                    const userId = element.dataset.id;
+                    selectedUserIdElement.value = userId;
+                    deleteUserFormElement.submit();
+                }
+            })
+        })
+    </script>
+}

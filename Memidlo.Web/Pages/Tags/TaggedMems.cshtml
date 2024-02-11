@@ -1,0 +1,57 @@
+﻿@page "/tags/{tagName}"
+@model Memidlo.Web.Pages.Tags.TaggedMemsModel
+@{
+    ViewData["Title"] = Model.TagName;
+}
+
+<div class="container">
+    <div class="row justify-content-center p-3 m-3">
+        <div class="col-8">
+            <div class="mt-2 mb-5">
+                <span class="text-dark fs-3 bg-light py-2 px-3">
+                    #@Model.TagName
+                </span>
+            </div>
+            @if (Model.Mems != null && Model.Mems.Any())
+            {
+                foreach (var mem in Model.Mems)
+                {
+                    <a href="/mems/@mem.Id" class="text-decoration-none ">
+                        <div class="bg-black px-5 pt-3 pb-3 mb-5">
+                            <h1 class="text-light mb-3 text-center">
+                                @mem.Heading
+                            </h1>
+                            <center><img src="@mem.FeaturedImageUrl" alt="@mem.Heading" class="img-fluid d-block mb-3" /></center>
+                            <p class="text-light fs-4 mb-3 text-center">@mem.Content</p>
+                            <p class="text-secondary float-end">Autor: @mem.Author</p>
+                            <br />
+                        </div>
+                    </a>
+                }
+            }
+            else
+            {
+                <h3 class="m-5 text-light fs-italic">Niestety, żaden mem nie zostal oznaczony tym tagiem</h3>
+            }
+        </div>
+    </div>
+    <div>
+        @if (Model.PaginatedPage.Count > 10)
+        {
+            <ul class="pagination justify-content-center">
+                @if (Model.PaginatedPage.ShowPrevious)
+                {
+                    <li class="page-item">
+                        <a asp-route-currentpage="@(Model.PaginatedPage.CurrentPage -1)" class="btn btn-light me-5">Previous</a>
+                    </li>
+                }
+                @if (Model.PaginatedPage.ShowNext)
+                {
+                    <li class="page-item">
+                        <a asp-route-currentpage="@(Model.PaginatedPage.CurrentPage + 1)" class="btn btn-light">Next >></a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</div>

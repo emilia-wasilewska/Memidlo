@@ -1,0 +1,140 @@
+﻿@page "/mems/{id}"
+@model Memidlo.Web.Pages.Mems.MemModel
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> signInManager
+@inject UserManager<IdentityUser> userManager
+@{
+    ViewData["Title"] = Model.Mem.PageTitle;
+}
+<div class="container">
+    <div class="row justify-content-center p-3 m-3">
+        <div class="col-8">
+            <div class="bg-black px-5 pt-3 pb-3 mb-5">
+
+                @if (Model.Mem != null)
+                {
+                    <h1 class="text-light mb-3 text-center">
+                        @Model.Mem.Heading
+                    </h1>
+                    <center><img src="@Model.Mem.FeaturedImageUrl" alt="@Model.Mem.Heading" class="img-fluid d-block mb-3" /></center>
+                    <p class="text-light fs-4 mb-3 text-center">@Model.Mem.Content</p>
+                    <p class="text-secondary float-end">Autor: @Model.Mem.Author</p>
+                    <br />
+                    @if (Model.Mem.Tags != null)
+                    {
+                        foreach (var tag in Model.Mem.Tags)
+                        {
+                            <a class="text-decoration-none" href="/tags/@tag.Name">
+                                <span class="badge bg-light text-dark">@tag.Name</span>
+                            </a>
+                        }
+                        <br />
+                    }
+
+                    <div class="my-3 text-light">
+                        <span>
+                            @if (signInManager.IsSignedIn(User))
+                            {
+                                @if (!Model.Liked)
+                                {
+                                    <a id="buttonLike" style="cursor: pointer">
+                                        <i class="bi bi-hand-thumbs-up"></i>
+
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a style="cursor: pointer">
+                                        <i class="bi bi-hand-thumbs-up-fill"></i>
+                                    </a>
+                                }
+                            }
+                            <span id="totalLikes"> Lajków: @Model.TotalLikes</span>
+                        </span>
+                    </div>
+                    <div class="card bg-dark text-light">
+                        <div class="card-header">
+                            <h5>Komentarze</h5>
+                            @if (signInManager.IsSignedIn(User))
+                            {
+                                <form method="post">
+                                    <div class="mb-3">
+                                        <label class="form-label">Dodaj swój komentarz</label>
+                                        <input type="text" class="form-control mb-3" asp-for="CommentContent" />
+                                        <span class="text-danger" asp-validation-for="CommentContent"></span>
+                                        <div class="mb-3">
+                                            <button type="submit" class="btn btn-light">Zapisz komentarz</button>
+                                            <input type="hidden" asp-for="MemId" />
+                                        </div>
+                                    </div>
+                                </form>
+                            }
+                        </div>
+                        <div class="card-body">
+                            @if (Model.CommentVMs != null && Model.CommentVMs.Any())
+                            {
+                                @foreach (var comment in Model.CommentVMs)
+                                {
+                                    <div class="card mb-3">
+                                        <div class="card-body">
+                                            <div class="text-dark">
+                                                @comment.Description
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span class="text-secondary">@comment.UserName</span>
+                                                <span class="text-secondary">@comment.PublishDate.ToShortDateString()</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div class="m-5 text-light">
+                                    <p>Ten mem nie zostal jeszcze skomentowany</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const buttonLike = document.getElementById('buttonLike');
+        const totalLikes = document.getElementById('totalLikes');
+
+        async function getTotalLikes() {
+            fetch('/api/memlike/@Model.Mem.Id/totallikes', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*'
+                }
+            })
+                .then(data => data.json())
+                .then(result => totalLikes.innerHTML = 'Lajków: ' + result);
+        }
+
+        async function addLikeForMem() {
+            fetch('/api/memlike/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': '*/*'
+                },
+                body: JSON.stringify({ memId: '@Model.Mem.Id', userId: '@userManager.GetUserId(User)' })
+            })
+                .then(() => {
+                    buttonLike.innerHTML = '<i class="bi bi-hand-thumbs-up-fill"></i>';
+                    buttonLike.removeEventListener('click', addLikeForMem);
+                    getTotalLikes();
+                });
+        }
+
+        buttonLike.addEventListener('click', addLikeForMem);
+    </script>
+}
