@@ -21,75 +21,80 @@
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark border-bottom box-shadow">
             <div class="container">
                 <a class="navbar-brand fs-1 fst-italic text-light" asp-area="" asp-page="/Index">MEMIDŁO</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
                 @if (signInManager.IsSignedIn(User))
                 {
 
                     <a class="nav-link text-light fs-5 btn btn-outline-light bg-dark" asp-area="" asp-page="/Mems/AddMem">DODAJ MEM</a>
 
                 }
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1 justify-content-end">
+                        <li class="nav-item">
+                            <a class="nav-link text-light fs-5 mx-2 " asp-area="" asp-page="/Index">GŁÓWNA</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light fs-5 mx-2" asp-area="" asp-page="/WaitingRoom">POCZEKALNIA</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light fs-5 mx-2" asp-area="" asp-page="/Mems/RandomMem">LOSUJ</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light fs-5 mx-2" asp-area="" asp-page="/TopTen">TOP 10</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light fs-5 ms-2 me-3" data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdownLogin"><i class="bi bi-search"></i></a>
 
-                <ul class="navbar-nav flex-grow-1 justify-content-end">
-                    <li class="nav-item">
-                        <a class="nav-link text-light fs-5 mx-2 " asp-area="" asp-page="/Index">GŁÓWNA</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light fs-5 mx-2" asp-area="" asp-page="/WaitingRoom">POCZEKALNIA</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light fs-5 mx-2" asp-area="" asp-page="/Mems/RandomMem">LOSUJ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-light fs-5 mx-2" asp-area="" asp-page="/TopTen">TOP 10</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-light fs-5 ms-2 me-3" data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdownLogin"><i class="bi bi-search"></i></a>
-
-                        <ul class="dropdown-menu bg-dark border-white">
-                            <li>
-                                <input class=" mb-2 mx-2" id="searchTag" />
-                                <button class="btn btn-outline-light mx-2 float-end" type="submit" id="buttonSearch">Szukaj</button>
-                            </li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-light fs-5 mx-2" data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdownLogin">
-                            @if (signInManager.IsSignedIn(User))
-                            {
-                                @User?.Identity?.Name
-                            }
-                            else
-                            {
-                                <i class="bi bi-person-fill"></i>
-                            }
-                        </a>
-                        <ul class="dropdown-menu bg-dark border-white" aria-labelledby="navbarDropdownLogin">
-                            <li>
-                                <a class="dropdown-item text-light" href="/Profile/Login">Logowanie</a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-light" href="/Profile/Register">Rejestracja</a>
-                            </li>
-                            @if (signInManager.IsSignedIn(User))
-                            {
+                            <ul class="dropdown-menu bg-dark border-white">
                                 <li>
-                                    <a class="dropdown-item text-light" href="/Profile/MyProfile/@userManager.GetUserId(User)">Mój profil</a>
+                                    <input class=" mb-2 mx-2" id="searchTag" />
+                                    <button class="btn btn-outline-light mx-2 float-end" type="submit" id="buttonSearch">Szukaj</button>
                                 </li>
-                                @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-light fs-5 mx-2" data-bs-toggle="dropdown" aria-expanded="false" id="navbarDropdownLogin">
+                                @if (signInManager.IsSignedIn(User))
+                                {
+                                    @User?.Identity?.Name
+                                }
+                                else
+                                {
+                                    <i class="bi bi-person-fill"></i>
+                                }
+                            </a>
+                            <ul class="dropdown-menu bg-dark border-white" aria-labelledby="navbarDropdownLogin">
+                                <li>
+                                    <a class="dropdown-item text-light" href="/Profile/Login">Logowanie</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-light" href="/Profile/Register">Rejestracja</a>
+                                </li>
+                                @if (signInManager.IsSignedIn(User))
                                 {
                                     <li>
-                                        <a class="dropdown-item text-light" href="/Admin/Users">Użytkownicy</a>
+                                        <a class="dropdown-item text-light" href="/Profile/MyProfile/@userManager.GetUserId(User)">Mój profil</a>
                                     </li>
+                                    @if (signInManager.IsSignedIn(User) && User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a class="dropdown-item text-light" href="/Admin/Users">Użytkownicy</a>
+                                        </li>
+                                    }
                                 }
-                            }
-                        </ul>
-                    </li>
-                </ul>
-                @if (signInManager.IsSignedIn(User))
-                {
-                    <!-- Modal trigger -->
-                    <a class="nav-link btn btn-outline-light bg-dark text-light ms-3" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-power" id="iconLogout"></i></a>
+                            </ul>
+                        </li>
+                    </ul>
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <!-- Modal trigger -->
+                        <a class="nav-link btn btn-outline-light bg-dark text-light ms-3" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-power" id="iconLogout"></i></a>
 
-                }
+                    }
+                </div>
             </div>
         </nav>
     </header>
